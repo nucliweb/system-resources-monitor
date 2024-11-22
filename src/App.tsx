@@ -1,13 +1,6 @@
 // src/App.tsx
 import { useEffect, useState } from "react";
 
-interface NetworkInfo extends EventTarget {
-  effectiveType?: string;
-  saveData?: boolean;
-  addEventListener?: (type: string, callback: EventListener) => void;
-  removeEventListener?: (type: string, callback: EventListener) => void;
-}
-
 const Card = ({
   title,
   children,
@@ -50,8 +43,7 @@ const App = () => {
 
   const deviceMemory = (navigator as any).deviceMemory || "Not available";
   const cpuCores = navigator.hardwareConcurrency || "Not available";
-  const connection = (navigator as any).connection as NetworkInfo;
-  const dataSaver = connection?.saveData || false;
+  const connection = (navigator as any).connection;
 
   useEffect(() => {
     if (connection) {
@@ -61,14 +53,14 @@ const App = () => {
 
       updateNetworkInfo();
 
-      if (connection.addEventListener) {
-        connection.addEventListener("change", updateNetworkInfo);
-        return () => {
-          connection.removeEventListener?.("change", updateNetworkInfo);
-        };
-      }
+      connection.addEventListener("change", updateNetworkInfo);
+      return () => {
+        connection.removeEventListener("change", updateNetworkInfo);
+      };
     }
-  }, [connection]);
+  }, []);
+
+  const dataSaver = connection?.saveData || false;
 
   return (
     <>
