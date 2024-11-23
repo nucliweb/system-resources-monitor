@@ -1,4 +1,3 @@
-// src/App.tsx
 import { useEffect, useState } from "react";
 
 const Card = ({
@@ -39,13 +38,13 @@ const Card = ({
         {children}
       </div>
     </div>
-    <div className="mt-2 text-xs sm:text-sm text-gray-500">
-      <span className="text-gray-400">→ man </span>
+    <div className="mt-2 text-xs sm:text-sm text-gray-500 flex items-center">
+      <span className="text-gray-400 mr-2">→ man</span>
       <a
         href={docLink}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-blue-400 hover:text-blue-300 hover:underline truncate inline-block max-w-full"
+        className="text-blue-400 hover:text-blue-300 hover:underline truncate"
       >
         {title.toLowerCase().replace(/ /g, "-")}
       </a>
@@ -83,7 +82,7 @@ const App = () => {
         connection.removeEventListener("change", updateNetworkInfo);
       };
     }
-  }, []);
+  }, [connection]);
 
   const dataSaver = connection?.saveData || false;
 
