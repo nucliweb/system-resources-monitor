@@ -5,10 +5,12 @@ const Card = ({
   title,
   children,
   docLink,
+  supported,
 }: {
   title: string;
   children: React.ReactNode;
   docLink: string;
+  supported: boolean;
 }) => (
   <div className="mb-6 font-mono">
     <div className="bg-gray-900 rounded border border-green-500 p-4">
@@ -21,7 +23,14 @@ const Card = ({
           {title.toLowerCase().replace(/ /g, "-")}.txt
         </span>
       </div>
-      <h2 className="text-xl font-bold mb-3 text-green-400">[{title}]</h2>
+      <h2 className="text-xl font-bold mb-3 text-green-400 flex items-center justify-between">
+        <span>[{title}]</span>
+        <span
+          className={`text-sm ${supported ? "text-green-400" : "text-red-400"}`}
+        >
+          {supported ? "● Supported" : "● Not Supported"}
+        </span>
+      </h2>
       <div className="text-green-300">{children}</div>
     </div>
     <div className="mt-2 text-sm text-gray-500">
@@ -41,9 +50,19 @@ const Card = ({
 const App = () => {
   const [networkType, setNetworkType] = useState<string>("Not available");
 
-  const deviceMemory = (navigator as any).deviceMemory || "Not available";
-  const cpuCores = navigator.hardwareConcurrency || "Not available";
+  const deviceInfo = {
+    platform: navigator.platform,
+    userAgent: navigator.userAgent,
+  };
+
+  const deviceMemory = (navigator as any).deviceMemory;
+  const cpuCores = navigator.hardwareConcurrency;
   const connection = (navigator as any).connection;
+
+  // Comprobación de soporte de APIs
+  const isDeviceMemorySupported = "deviceMemory" in navigator;
+  const isCpuCoresSupported = "hardwareConcurrency" in navigator;
+  const isNetworkInfoSupported = "connection" in navigator;
 
   useEffect(() => {
     if (connection) {
@@ -91,35 +110,53 @@ const App = () => {
             </h1>
           </div>
 
+          <div className="mb-6 text-gray-400 text-sm">
+            <p>Platform: {deviceInfo.platform}</p>
+            <p className="truncate">User Agent: {deviceInfo.userAgent}</p>
+          </div>
+
           <Card
             title="Device Memory"
             docLink="https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory"
+            supported={isDeviceMemorySupported}
           >
             <p className="text-lg">
-              {typeof deviceMemory === "number"
+              {isDeviceMemorySupported
                 ? `${deviceMemory} GB`
-                : deviceMemory}
+                : "This API is not supported in your browser"}
             </p>
           </Card>
 
           <Card
             title="CPU Cores"
             docLink="https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency"
+            supported={isCpuCoresSupported}
           >
             <p className="text-lg">
-              {typeof cpuCores === "number" ? `${cpuCores} cores` : cpuCores}
+              {isCpuCoresSupported
+                ? `${cpuCores} cores`
+                : "This API is not supported in your browser"}
             </p>
           </Card>
 
           <Card
             title="Network Information"
             docLink="https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation"
+            supported={isNetworkInfoSupported}
           >
             <div className="space-y-2">
-              <p className="text-lg">Connection type: {networkType}</p>
-              <p className="text-lg">
-                Data saver: {dataSaver ? "Enabled" : "Disabled"}
-              </p>
+              {isNetworkInfoSupported ? (
+                <>
+                  <p className="text-lg">Connection type: {networkType}</p>
+                  <p className="text-lg">
+                    Data saver: {dataSaver ? "Enabled" : "Disabled"}
+                  </p>
+                </>
+              ) : (
+                <p className="text-lg">
+                  This API is not supported in your browser
+                </p>
+              )}
             </div>
           </Card>
         </div>
