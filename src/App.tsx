@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card } from "./components/Card";
+import { Analytics } from "@vercel/analytics/react";
 
 const App = () => {
   const [networkType, setNetworkType] = useState<string>("Not available");
@@ -82,6 +83,7 @@ const App = () => {
           </div>
         </Card>
       </div>
+      <Analytics />
     </div>
   );
 };
